@@ -1,0 +1,10 @@
+{
+  "description": "Streamline project management by enabling users to create and manage work tickets efficiently, enhancing collaboration and productivity for development teams.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
