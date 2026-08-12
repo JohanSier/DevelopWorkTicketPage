@@ -118,33 +118,6 @@ interface DialogueBlockProps {
   onTypingComplete?: () => void
 }
 
-// W-words only highlighted in entry id=3, case-sensitive. Other tokens always highlighted.
-function highlightText(text: string, baseColor: string, includeWWords: boolean) {
-  const re = includeWWords
-    ? /(Who|What|Where|When|Why|1st|2nd|3rd|#534256)/g
-    : /(1st|2nd|3rd|#534256)/g
-  const parts = text.split(re)
-  return parts.map((part, i) =>
-    i % 2 === 1 ? (
-      <span
-        key={i}
-        style={{
-          fontWeight: 700,
-          fontSize: 14,
-          textDecoration: 'underline',
-          textDecorationThickness: '1px',
-          textUnderlineOffset: '2px',
-          color: baseColor,
-        }}
-      >
-        {part}
-      </span>
-    ) : (
-      part
-    )
-  )
-}
-
 const textStyle: CSSProperties = {
   fontFamily: "'Lato', sans-serif",
   fontStyle: 'italic',
@@ -204,7 +177,7 @@ const DialogueBlock = forwardRef<HTMLDivElement, DialogueBlockProps>(
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
             <UserBadge dim={dim} />
             <p style={{ ...textStyle, color: textColor, textAlign: 'left', maxWidth: 290, transition: 'color 0.5s ease' }}>
-              {highlightText(visibleText, textColor, entry.id === 3)}{caret}
+              {visibleText}{caret}
             </p>
           </div>
         </div>
@@ -217,7 +190,7 @@ const DialogueBlock = forwardRef<HTMLDivElement, DialogueBlockProps>(
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <MentorBadge dim={dim} />
           <p style={{ ...textStyle, color: textColor, textAlign: 'right', maxWidth: 334, transition: 'color 0.5s ease' }}>
-            {highlightText(visibleText, textColor, entry.id === 3)}{caret}
+            {visibleText}{caret}
           </p>
         </div>
         <MentorAvatar dim={dim} active={isActive && !dim} showBulb={!!entry.important} />

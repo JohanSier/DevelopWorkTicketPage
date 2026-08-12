@@ -41,7 +41,7 @@ export const workTicketDialogue: DialogueEntry[] = [
   {
     id: 7,
     speaker: 'user',
-    message: "I'm using a external mouse with a usb receiver and it works totally fine",
+    message: "I'm using a external mouse with a usb receiver and it\nworks totally fine",
   },
   {
     id: 8,
