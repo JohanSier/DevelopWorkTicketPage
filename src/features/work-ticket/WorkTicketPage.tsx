@@ -2,10 +2,12 @@ import { useState, useRef, useCallback, useEffect, type CSSProperties, type Mous
 import { workTicketDialogue } from './data/workTicketDialogue'
 import DialogueBlock from './components/DialogueBlock'
 import CustomCursor from './components/CustomCursor'
+import SimulationPicker from './components/SimulationPicker'
 
 type CursorState = 'reading' | 'ready' | 'restart'
 
 export default function WorkTicketPage() {
+  const [hasSelectedSimulation, setHasSelectedSimulation] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [isTypingComplete, setIsTypingComplete] = useState(false)
   const [skipAnimation, setSkipAnimation] = useState(false)
@@ -109,6 +111,10 @@ export default function WorkTicketPage() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goBack])
+
+  if (!hasSelectedSimulation) {
+    return <SimulationPicker onSelectTrackpad={() => setHasSelectedSimulation(true)} />
+  }
 
   const containerStyle: CSSProperties = {
     position: 'relative',
