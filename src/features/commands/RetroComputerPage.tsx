@@ -60,7 +60,7 @@ export default function RetroComputerPage() {
                 <div className="screenBox3">
                   <div className="screen">
                     {screenOn && (
-                      <div className="output">
+                      <div className="output" tabIndex={0} role="log" aria-label="Computer terminal output">
                         {centralUnitOn ? (
                           <>
                             {history.map((line, index) => <div key={`${line}-${index}`}>{line || "\u00a0"}</div>)}
