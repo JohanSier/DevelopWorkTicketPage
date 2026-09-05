@@ -1,8 +1,13 @@
-import { useState, type CSSProperties, type PointerEvent } from 'react'
+import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import WorkTicketPage from './features/work-ticket/WorkTicketPage'
 import TemplatesPage from './features/templates/TemplatesPage'
+import CallFlow from './features/call-flow/CallFlow'
+import TimeRule from './features/time-rule/TimeRule'
+import HomeIntro from './features/home/HomeIntro'
+import CommandsButton from './imports/Button-1'
+import RetroComputerPage from './features/commands/RetroComputerPage'
 
-type Page = 'home' | 'work-ticket' | 'templates' | 'escalations'
+type Page = 'home' | 'work-ticket' | 'templates' | 'escalations' | 'commands'
 
 // ── Nav icons ─────────────────────────────────────────────────────────────────
 function HomeIcon() {
@@ -49,6 +54,19 @@ function EscalationsIcon() {
 
 // ── Bottom navigation ─────────────────────────────────────────────────────────
 function BottomNav({ current, onNavigate }: { current: Page; onNavigate: (p: Page) => void }) {
+  const [isTemplatesHovered, setIsTemplatesHovered] = useState(false)
+  const closeCommandsTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const keepCommandsOpen = () => {
+    if (closeCommandsTimeout.current) clearTimeout(closeCommandsTimeout.current)
+    setIsTemplatesHovered(true)
+  }
+
+  const scheduleCommandsClose = () => {
+    if (closeCommandsTimeout.current) clearTimeout(closeCommandsTimeout.current)
+    closeCommandsTimeout.current = setTimeout(() => setIsTemplatesHovered(false), 260)
+  }
+
   const items: { id: Page; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <HomeIcon /> },
     { id: 'work-ticket', label: 'Work Ticket', icon: <TicketIcon /> },
@@ -58,6 +76,7 @@ function BottomNav({ current, onNavigate }: { current: Page; onNavigate: (p: Pag
 
   return (
     <nav
+      onMouseLeave={scheduleCommandsClose}
       style={{
         position: 'fixed',
         bottom: 16,
@@ -73,16 +92,17 @@ function BottomNav({ current, onNavigate }: { current: Page; onNavigate: (p: Pag
         gap: 2,
         zIndex: 1000,
         fontFamily: "'Lato', sans-serif",
-        boxShadow: '0 0 0 1px rgba(255,255,255,0.18), 0 8px 32px rgba(0,0,0,0.7), 0 0 24px rgba(255,255,255,0.03)',
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.62), 0 8px 32px rgba(0,0,0,0.7), 0 0 26px rgba(255,255,255,0.34)',
         whiteSpace: 'nowrap',
       }}
     >
       {items.map(({ id, label, icon }) => {
         const active = current === id
-        return (
+        const navigationButton = (
           <button
-            key={id}
             onClick={() => onNavigate(id)}
+            onMouseEnter={() => { if (id === 'templates') keepCommandsOpen(); else setIsTemplatesHovered(false) }}
+            onFocus={() => { if (id === 'templates') keepCommandsOpen() }}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -111,6 +131,29 @@ function BottomNav({ current, onNavigate }: { current: Page; onNavigate: (p: Pag
             </span>
           </button>
         )
+
+        if (id !== 'templates') return <div key={id}>{navigationButton}</div>
+
+        return (
+          <div className="templates-nav-anchor" key={id}>
+            {navigationButton}
+            <div
+              className={`commands-nav-slot ${isTemplatesHovered ? 'is-visible' : ''}`}
+              onMouseEnter={keepCommandsOpen}
+              aria-hidden={!isTemplatesHovered}
+            >
+              <button
+                type="button"
+                className={`commands-nav-button ${current === 'commands' ? 'is-active' : ''}`}
+                tabIndex={isTemplatesHovered ? 0 : -1}
+                aria-label="Commands and TS"
+                onClick={() => onNavigate('commands')}
+              >
+                <CommandsButton />
+              </button>
+            </div>
+          </div>
+        )
       })}
     </nav>
   )
@@ -120,6 +163,7 @@ function BottomNav({ current, onNavigate }: { current: Page; onNavigate: (p: Pag
 function HomePage() {
   const [hovering, setHovering] = useState(false)
   const [cursor, setCursor] = useState({ x: 0, y: 0 })
+  const [isCallFlowHovered, setIsCallFlowHovered] = useState(false)
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -133,13 +177,13 @@ function HomePage() {
     width: '100%',
     minHeight: '100vh',
     overflow: 'hidden',
-    backgroundColor: '#f8fbff',
+    backgroundColor: '#060608',
   }
   const dots: CSSProperties = {
     position: 'absolute',
     inset: 0,
     backgroundImage:
-      'radial-gradient(circle at center, rgba(157, 200, 255, 0.52) 1.2px, transparent 1.4px)',
+      'radial-gradient(circle at center, rgba(255, 255, 255, 0.16) 1.2px, transparent 1.4px)',
     backgroundPosition: 'center',
     backgroundSize: '18px 18px',
   }
@@ -147,7 +191,7 @@ function HomePage() {
     position: 'absolute',
     inset: 0,
     backgroundImage:
-      'radial-gradient(circle at center, rgba(157, 200, 255, 0.52) 2.16px, transparent 2.36px)',
+      'radial-gradient(circle at center, rgba(255, 255, 255, 0.56) 2.16px, transparent 2.36px)',
     backgroundPosition: 'center',
     backgroundSize: '18px 18px',
     opacity: hovering ? 1 : 0,
@@ -164,6 +208,9 @@ function HomePage() {
     >
       <div style={dots} />
       <div style={dotsHover} />
+      <HomeIntro />
+      <TimeRule hidden={isCallFlowHovered} />
+      <CallFlow onHoverChange={setIsCallFlowHovered} />
     </div>
   )
 }
@@ -204,6 +251,7 @@ export default function App() {
     page === 'home' ? <HomePage /> :
     page === 'work-ticket' ? <WorkTicketPage /> :
     page === 'templates' ? <TemplatesPage /> :
+    page === 'commands' ? <RetroComputerPage /> :
     <EscalationsPage />
 
   return (

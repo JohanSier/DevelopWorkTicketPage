@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,300..700&family=Arbutus+Slab&family=Open+Sans:wght@400;600&display=swap');
 @import 'tailwindcss';
 @font-face { font-family: 'Bricolage Grotesque:Regular'; font-style: normal; font-weight: 400; font-display: swap; src: url('https://static.figma.com/font/BricolageGrotesque_opsz_wdth_wght__1') format('woff2'); }
+@font-face { font-family: 'Bricolage Grotesque:Bold'; font-style: normal; font-weight: 700; font-display: swap; src: url('https://static.figma.com/font/BricolageGrotesque_opsz_wdth_wght__1') format('woff2'); }
 @font-face { font-family: 'Lato:Bold'; font-style: normal; font-weight: 700; font-display: swap; src: url('https://static.figma.com/font/Lato-Bold_1') format('woff2'); }
 @font-face { font-family: 'Lato:Regular'; font-style: normal; font-weight: 400; font-display: swap; src: url('https://static.figma.com/font/Lato-Regular_1') format('woff2'); }
 @font-face { font-family: 'Lato:Bold Italic'; font-style: italic; font-weight: 700; font-display: swap; src: url('https://static.figma.com/font/Lato-BoldItalic_1') format('woff2'); }
@@ -258,3 +260,58 @@
   .simulation-picker { padding-inline: 12px; }
   .simulation-picker__cards { gap: 10px; }
 }
+
+
+/* Commands & TS: reveals only from the Templates nav interaction. */
+.templates-nav-anchor { position: relative; display: flex; }
+.commands-nav-slot {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  width: 102px;
+  height: 56px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px) scale(.94);
+  transform-origin: center bottom;
+  transition: opacity .18s ease, transform .24s cubic-bezier(.16, 1, .3, 1);
+}
+.commands-nav-slot.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0) scale(1);
+}
+.commands-nav-button {
+  display: block;
+  width: 102px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.commands-nav-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  border-radius: 40px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .commands-nav-slot { transition: none; }
+}
+
+/* Commands & TS follows the inactive-to-active treatment of the main nav items. */
+.commands-nav-slot { bottom: calc(100% + 10px); }
+.commands-nav-button > div > div,
+.commands-nav-button > div > p {
+  opacity: .35;
+  transition: opacity .2s ease;
+}
+.commands-nav-button:hover > div > div,
+.commands-nav-button:hover > div > p,
+.commands-nav-button:focus-visible > div > div,
+.commands-nav-button:focus-visible > div > p { opacity: 1; }
+
+/* Extra offset keeps a visible gap clear of the bottom bar's white glow. */
+.commands-nav-slot { bottom: calc(100% + 22px); }
+
+.commands-nav-button.is-active > div > div, .commands-nav-button.is-active > div > p { opacity: 1; }
